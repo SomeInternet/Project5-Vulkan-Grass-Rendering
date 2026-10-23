@@ -76,6 +76,7 @@ private:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
     std::vector<VkFramebuffer> framebuffers;
+    VkFormat depthFormat;
 
     std::vector<VkCommandBuffer> commandBuffers;
     VkCommandBuffer computeCommandBuffer;

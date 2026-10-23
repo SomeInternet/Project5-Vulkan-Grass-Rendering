@@ -153,6 +153,7 @@ int main() {
 
     vkDestroyImage(device->GetVkDevice(), grassImage, nullptr);
     vkFreeMemory(device->GetVkDevice(), grassImageMemory, nullptr);
+    vkDestroySurfaceKHR(instance->GetVkInstance(), surface, nullptr);
 
     delete scene;
     delete plane;
@@ -163,5 +164,10 @@ int main() {
     delete device;
     delete instance;
     DestroyWindow();
+
+    #ifndef NDEBUG
+        std::fprintf(stderr, "Press Enter to exit...\n");
+        std::getchar();
+    #endif
     return 0;
 }
