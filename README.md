@@ -52,3 +52,52 @@ The result is rather aggressive here, but it's moreso a demonstration of the app
 
 #### Orientation culling
 The grass blades are essentially infinitely thin. Thus at grazing angles they become hardly visible. We can therefore also perform a simple culling check by taking the dot product of the direction at which the camera is viewing the grass blade and the direction it is facing, cutting it off below a certain threshold.
+
+### Benchmarking
+
+#### Frustum culling lenience
+| Lenience | Visible blades | Compute (ms) | Grass (ms) |
+|---:|---:|---:|---:|
+| 0.80 | 5175 | 0.137 | 0.121 |
+| 0.90 | 5463 | 0.145 | 0.124 |
+| 0.95 | 5531 | 0.159 | 0.127 |
+| 1.10 | 5651 | 0.146 | 0.123 |
+| 1.50 | 5676 | 0.161 | 0.126 |
+| 2.00 | 5680 | 0.145 | 0.127 |
+
+#### Distance culling: max distance (4 buckets)
+| Max distance | Visible blades | Compute (ms) | Grass (ms) |
+|---:|---:|---:|---:|
+| 8 | 402 | 0.009 | 0.023 |
+| 12 | 1640 | 0.022 | 0.067 |
+| 16 | 3001 | 0.043 | 0.094 |
+| 24 | 4799 | 0.115 | 0.119 |
+| 32 | 5531 | 0.159 | 0.127 |
+| 64 | 6949 | 0.256 | 0.148 |
+
+#### Distance culling: number of buckets (max distance 32)
+| Buckets | Visible blades | Compute (ms) | Grass (ms) |
+|---:|---:|---:|---:|
+| 1 | 6950 | 0.243 | 0.146 |
+| 2 | 6948 | 0.240 | 0.146 |
+| 3 | 6338 | 0.218 | 0.144 |
+| 4 | 5531 | 0.159 | 0.127 |
+| 6 | 4464 | 0.138 | 0.122 |
+| 8 | 3640 | 0.084 | 0.111 |
+
+#### Tessellation factors
+| U factor (V = 2) | Grass (ms) |
+|---:|---:|
+| 1 | 0.079 |
+| 2 | 0.084 |
+| 4 | 0.096 |
+| 8 | *.127 |
+| 16 | 0.188 |
+
+| V factor (U = 8) | Grass (ms) |
+|---:|---:|
+| 1 | 0.133 |
+| 2 | 0.127 |
+| 4 | 0.176 |
+| 8 | 0.281 |
+| 16 | 0.495 |
