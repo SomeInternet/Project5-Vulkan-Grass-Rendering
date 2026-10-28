@@ -12,7 +12,7 @@ Vulkan Grass Rendering
 ![](img/demo.gif)
 
 ### A bit of basecode housekeeping
-Before I got started, I noticed that the existing basecode causes several validation layer warnings, including some leaked Vulkan objects (e.g. the surface is not destroyed). The basecode also uses render passes (which is deprecated), which I switched to dynamic rendering.
+Before I got started, I had to change the CMakeLists version (it was old), and I noticed that the existing basecode causes several validation layer warnings, including some leaked Vulkan objects (e.g. the surface is not destroyed). The basecode also uses render passes (which is deprecated), which I switched to dynamic rendering.
 
 Because I've thus far rather enjoyed working with it and it seems to be quite popular, I opted to write my shaders in Slang. The grass shaders are all in `tessellation.slang`, the basic graphics pipeline is in `graphics.slang`, and the compute pass is in `compute.slang`.
 
@@ -42,7 +42,7 @@ First off, it doesn't make sense to draw grass blades we can't see. We'll use a 
 
 With more aggressive culling, you can see what this is doing:
 ![](img/frustum_culling.png)  
-*Here I set my LENIENCY macro to 0.8, meaning anything outside of the [-0.8, -0.8] to [0.8, 0.8] range gets culled.*
+*Here I set my LENIENCE macro to 0.8, meaning anything outside of the [-0.8, -0.8] to [0.8, 0.8] range gets culled.*
 
 #### Distance culling
 While I do lower the LOD of the tessellation as the grass blades get further from the camera, it also makes sense to just not draw them in the first place as they get further. After all, each blade of grass becomes harder to see. I thus bucket the grass by distance, with a safe radius macro, and thin the grass with distance, until a max distance beyond which no grass is rendered. This is pretty prominently demonstrated in the demo gif at the top of the README, but I do this by first calculating what distance bucket a blade of grass would fall into by taking the distance from `v0` to the camera, then subtracting a safe radius and dividing it by the number of buckets. I then thin by about half per each bucket with some bitwise operations:  
@@ -51,4 +51,4 @@ While I do lower the LOD of the tessellation as the grass blades get further fro
 The result is rather aggressive here, but it's moreso a demonstration of the approach, given the plane is not very large in the first place.
 
 #### Orientation culling
-The grass blades are essentially infinitely thin. Thus at grazing angles they become hardly visible. We can therefore also perform a simple culling check by taking the dot product of the angle at which the camera is viewing the grass blade and the angle it is facing, cutting it off below a certain threshold.
+The grass blades are essentially infinitely thin. Thus at grazing angles they become hardly visible. We can therefore also perform a simple culling check by taking the dot product of the direction at which the camera is viewing the grass blade and the direction it is facing, cutting it off below a certain threshold.
