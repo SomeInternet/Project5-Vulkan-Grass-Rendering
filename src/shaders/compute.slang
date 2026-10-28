@@ -168,7 +168,7 @@ void main(uint3 gThreadIdx: SV_DispatchThreadID) {
     if (oob0 && oob2 && oobM) return;
 
     // Distance cull
-    int bucketNum = floor((distance(camera.pos.xyz, b.v0.xyz) - SAFE_DIST) / (MAX_DIST / CULLING_BUCKETS));
+    int bucketNum = floor(max((distance(camera.pos.xyz, b.v0.xyz) - SAFE_DIST), 0.f) / (MAX_DIST / CULLING_BUCKETS));
     if ((gThreadIdx.x & ((1 << (int(CULLING_BUCKETS) + 1)) - 1)) >= (1 << (int(CULLING_BUCKETS) + 1 - bucketNum))) return;
     if (distance(camera.pos.xyz, b.v0.xyz) >= MAX_DIST) return;
 
