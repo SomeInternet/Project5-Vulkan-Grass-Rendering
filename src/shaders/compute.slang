@@ -90,6 +90,11 @@ float4 windAt(float3 p, float t) {
 //    return float(n) * (1.0 / float(0xffffffffU));
 //}
 
+#define LENIENCE .95f
+bool oob(float4 v) {
+    return v.x < -LENIENCE || v.y < -LENIENCE || v.x > LENIENCE || v.y > LENIENCE || v.z < 0.f;
+}
+
 [[shader("compute")]]
 [numthreads(32, 1, 1)]
 void main(uint3 gThreadIdx: SV_DispatchThreadID) {
@@ -145,6 +150,22 @@ void main(uint3 gThreadIdx: SV_DispatchThreadID) {
 
     //If it's too orthogonal to the camera, then cull
     if (abs(dot(facing, normalize(b.v0.xyz - float3(camera.pos.x, 0, camera.pos.z)))) < .2f) return;
+
+    // View frustum culling
+    float4 ssV0 = mul(camera.proj, mul(camera.view, float4(nBlade.v0.xyz, 1.f)));
+    ssV0 /= ssV0.w;
+    bool oob0 = oob(ssV0);
+
+    float4 ssV2 = mul(camera.proj, mul(camera.view, float4(nBlade.v2.xyz, 1.f)));
+    ssV2 /= ssV2.w;
+    bool oob2 = oob(ssV2);
+
+    float4 ssM = float4(.25f * nBlade.v0.xyz + .5f * nBlade.v1.xyz + .25f * nBlade.v2.xyz, 1.f);
+    ssM = mul(camera.proj, mul(camera.view, ssM));
+    ssM /= ssM.w;
+    bool oobM = oob(ssM);
+
+    if (oob0 && oob2 && oobM) return;
 
     // Distance cull
     int bucketNum = floor((distance(camera.pos.xyz, b.v0.xyz) - SAFE_DIST) / (MAX_DIST / CULLING_BUCKETS));

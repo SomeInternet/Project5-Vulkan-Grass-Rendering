@@ -101,9 +101,11 @@ DSOutput domMain(TessellationInfo tessellation, float2 uv: SV_DomainLocation, co
     float3 tan, bit, facing;
     computeGeometryInfo(patch[0].up.xyz, patch[0].v0.w, tan, bit, facing);
 
-    float3 p0 = patch[0].v2.w * (uv.y - .5f) * facing + patch[0].v0.xyz;
-    float3 p1 = patch[0].v2.w * (uv.y - .5f) * .825f * facing + patch[0].v1.xyz;
-    float3 p2 = patch[0].v2.w * (uv.y - .5f) * .25f * facing + patch[0].v2.xyz;
+    float3 span = normalize(cross(patch[0].up.xyz, facing));
+
+    float3 p0 = patch[0].v2.w * (uv.y - .5f) * span + patch[0].v0.xyz;
+    float3 p1 = patch[0].v2.w * (uv.y - .5f) * .825f * span + patch[0].v1.xyz;
+    float3 p2 = patch[0].v2.w * (uv.y - .5f) * .25f * span + patch[0].v2.xyz;
     // Compute the position of the subdivided vertex
 
     float3 p11 = lerp(p0, p1, uv.x);
